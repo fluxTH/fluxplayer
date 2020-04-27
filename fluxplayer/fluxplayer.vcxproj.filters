@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Header Files\widgets">
+      <UniqueIdentifier>{abca6f67-3578-486c-becf-1c1edd6a041b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\widgets">
+      <UniqueIdentifier>{676043f5-1e87-4e48-9788-efb3b15e1294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\models">
+      <UniqueIdentifier>{4ec78196-cb8e-4a49-84f0-81184083f4ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\models">
+      <UniqueIdentifier>{ab27ff6d-17e9-4e9c-a29c-50336f5aa28d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fluxplayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fxhelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fxplayercontrolwidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="fxaudiodeviceselectdialog.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="fxplayer.cpp">
+      <Filter>Source Files\models</Filter>
+    </ClCompile>
+    <ClCompile Include="fxplaylistmodel.cpp">
+      <Filter>Source Files\models</Filter>
+    </ClCompile>
+    <ClCompile Include="fxtrack.cpp">
+      <Filter>Source Files\models</Filter>
+    </ClCompile>
+    <ClCompile Include="fxtableview.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="fxconfigurationdialog.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="fxtrackprogressbarwidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="fluxplayer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="fxplayercontrolwidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="fxaudiodeviceselectdialog.h">
+      <Filter>Header Files\widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="fxplayer.h">
+      <Filter>Header Files\models</Filter>
+    </QtMoc>
+    <QtMoc Include="fxplaylistmodel.h">
+      <Filter>Header Files\models</Filter>
+    </QtMoc>
+    <QtMoc Include="fxtrack.h">
+      <Filter>Header Files\models</Filter>
+    </QtMoc>
+    <QtMoc Include="fxtableview.h">
+      <Filter>Header Files\widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="fxconfigurationdialog.h">
+      <Filter>Header Files\widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="fxtrackprogressbarwidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="fluxplayer.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="fxplayercontrolwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="fxaudiodeviceselectdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="fxconfigurationdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="fluxplayer.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fxhelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

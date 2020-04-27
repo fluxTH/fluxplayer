@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/FluxPlayer">
+        <file>Resources/icons/pause.svg</file>
+        <file>Resources/icons/play.svg</file>
+        <file>Resources/icons/check.svg</file>
+        <file>Resources/icons/eject.svg</file>
+        <file>Resources/icons/loop.svg</file>
+        <file>Resources/icons/next.svg</file>
+        <file>Resources/icons/previous.svg</file>
+        <file>Resources/icons/times.svg</file>
+        <file>Resources/icons/arrows.svg</file>
+        <file>Resources/icons/skipped.svg</file>
+    </qresource>
+</RCC>
