@@ -71,7 +71,7 @@
      style="display:inline">
     <g
        id="g7021"
-       style="display:inline;fill:#747474;fill-opacity:1"
+       style="display:inline;fill:#aaaaaa;fill-opacity:1"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
        transform="matrix(-1,0,0,1,623.99997,527.99989)">
@@ -79,11 +79,11 @@
          inkscape:connector-curvature="0"
          id="path7023"
          d="m 234,512.36222 v -24 l -15,12.00001 z"
-         style="opacity:1;fill:#747474;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="opacity:1;fill:#aaaaaa;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          sodipodi:nodetypes="cccc" />
       <path
          sodipodi:nodetypes="cccc"
-         style="opacity:1;fill:#747474;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="opacity:1;fill:#aaaaaa;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          d="m 220,512.3622 v -24 l -15,12.00003 z"
          id="path7025"
          inkscape:connector-curvature="0" />
@@ -94,7 +94,7 @@
          height="24.000004"
          width="8"
          id="rect7027"
-         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#747474;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
     </g>
   </g>
 </svg>

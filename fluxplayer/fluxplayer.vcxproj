@@ -21,25 +21,25 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B17A431B-1E3C-463D-AD19-A7E84E53F69E}</ProjectGuid>
     <Keyword>QtVS_v302</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -62,22 +62,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ExecutablePath>$(ProjectDir)dependencies\bin\x64\;$(ExecutablePath)</ExecutablePath>
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ExecutablePath>$(ProjectDir)dependencies\bin\x86\;$(ExecutablePath)</ExecutablePath>
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExecutablePath>$(ProjectDir)dependencies\bin\x86\;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExecutablePath>$(ProjectDir)dependencies\bin\x64\;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
@@ -109,20 +109,25 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>.\dependencies\lib\taglib\toolkit;.\dependencies\lib\taglib;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\vcpkg\packages\msgpack_x64-windows-static\include;C:\Libraries\vcpkg\packages\xxhash_x64-windows\include;C:\Libraries\taglib-1.11.1\taglib\mpeg\id3v2;C:\Libraries\taglib-1.11.1\taglib\toolkit;C:\Libraries\taglib-1.11.1\taglib;C:\Libraries\taglib-1.11.1;.\dependencies\lib\ebur128\includes;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>./dependencies/lib/bass/x64/bass.lib;./dependencies/lib/bass/x64/bassmix.lib;./dependencies/lib/bass/x64/basswasapi.lib;.\dependencies\lib\taglib\Release64\tag.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bass.lib;bassmix.lib;basswasapi.lib;bassasio.lib;tag.lib;ebur128.lib;xxhash.lib;msgpackc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Libraries\vcpkg\packages\msgpack_x64-windows-static\lib;C:\Libraries\vcpkg\packages\xxhash_x64-windows\lib;./dependencies/lib/taglib/Release64/;./dependencies/lib/ebur128/x64/;./dependencies/lib/bass/x64/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>
+      </Version>
     </Link>
     <PostBuildEvent>
       <Command>
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>copy /-y "$(ProjectDir)dependencies\bin\x64\" "$(OutDir)"</Command>
+      <Command>xcopy /Y /E /D "$(ProjectDir)dependencies\bin\$(PlatformTarget)\*" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -132,20 +137,25 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>.\dependencies\lib\taglib\toolkit;.\dependencies\lib\taglib;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\vcpkg\packages\msgpack_x86-windows-static\include;C:\Libraries\vcpkg\packages\xxhash_x86-windows\include;C:\Libraries\taglib-1.11.1\taglib\mpeg\id3v2;C:\Libraries\taglib-1.11.1\taglib\toolkit;C:\Libraries\taglib-1.11.1\taglib;C:\Libraries\taglib-1.11.1;.\dependencies\lib\ebur128\includes;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>./dependencies/lib/bass/x86/bass.lib;./dependencies/lib/bass/x86/bassmix.lib;./dependencies/lib/bass/x86/basswasapi.lib;.\dependencies\lib\taglib\Release86\tag.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bass.lib;bassmix.lib;basswasapi.lib;bassasio.lib;tag.lib;ebur128.lib;xxhash.lib;msgpackc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Libraries\vcpkg\packages\msgpack_x86-windows-static\lib;C:\Libraries\vcpkg\packages\xxhash_x86-windows\lib;./dependencies/lib/taglib/Release86/;./dependencies/lib/ebur128/x86/;./dependencies/lib/bass/x86/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>
+      </Version>
     </Link>
     <PostBuildEvent>
       <Command>
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>copy /-y "$(ProjectDir)dependencies\bin\x86\" "$(OutDir)"</Command>
+      <Command>xcopy /Y /E /D "$(ProjectDir)dependencies\bin\$(PlatformTarget)\*" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,19 +164,24 @@
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>.\dependencies\lib\taglib\toolkit;.\dependencies\lib\taglib;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\vcpkg\packages\msgpack_x64-windows-static\include;C:\Libraries\vcpkg\packages\xxhash_x64-windows\include;C:\Libraries\taglib-1.11.1\taglib\mpeg\id3v2;C:\Libraries\taglib-1.11.1\taglib\toolkit;C:\Libraries\taglib-1.11.1\taglib;C:\Libraries\taglib-1.11.1;.\dependencies\lib\ebur128\includes;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>QT_NO_DEBUG_OUTPUT=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>./dependencies/lib/bass/x64/bass.lib;./dependencies/lib/bass/x64/bassmix.lib;./dependencies/lib/bass/x64/basswasapi.lib;.\dependencies\lib\taglib\Release64\tag.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bass.lib;bassmix.lib;basswasapi.lib;bassasio.lib;tag.lib;ebur128.lib;xxhash.lib;msgpackc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Libraries\vcpkg\packages\msgpack_x64-windows-static\lib;C:\Libraries\vcpkg\packages\xxhash_x64-windows\lib;./dependencies/lib/taglib/Release64/;./dependencies/lib/ebur128/x64/;./dependencies/lib/bass/x64/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>
+      </Version>
     </Link>
     <PostBuildEvent>
       <Command>C:\Qt\5.14.2\msvc2017_64\bin\windeployqt.exe --release $(OutDir)fluxplayer.exe</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>copy /-y "$(ProjectDir)dependencies\bin\x64\" "$(OutDir)"</Command>
+      <Command>xcopy /Y /E /D "$(ProjectDir)dependencies\bin\$(PlatformTarget)\*" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -176,19 +191,24 @@
       </DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>.\dependencies\lib\taglib\toolkit;.\dependencies\lib\taglib;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\vcpkg\packages\msgpack_x86-windows-static\include;C:\Libraries\vcpkg\packages\xxhash_x86-windows\include;C:\Libraries\taglib-1.11.1\taglib\mpeg\id3v2;C:\Libraries\taglib-1.11.1\taglib\toolkit;C:\Libraries\taglib-1.11.1\taglib;C:\Libraries\taglib-1.11.1;.\dependencies\lib\ebur128\includes;.\dependencies\lib\bass\includes;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>QT_NO_DEBUG_OUTPUT=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>./dependencies/lib/bass/x86/bass.lib;./dependencies/lib/bass/x86/bassmix.lib;./dependencies/lib/bass/x86/basswasapi.lib;.\dependencies\lib\taglib\Release86\tag.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bass.lib;bassmix.lib;basswasapi.lib;bassasio.lib;tag.lib;ebur128.lib;xxhash.lib;msgpackc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Libraries\vcpkg\packages\msgpack_x86-windows-static\lib;C:\Libraries\vcpkg\packages\xxhash_x86-windows\lib;./dependencies/lib/taglib/Release86/;./dependencies/lib/ebur128/x86/;./dependencies/lib/bass/x86/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>
+      </Version>
     </Link>
     <PostBuildEvent>
       <Command>C:\Qt\5.14.2\msvc2017\bin\windeployqt.exe --release $(OutDir)fluxplayer.exe</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>copy /-y "$(ProjectDir)dependencies\bin\x86\" "$(OutDir)"</Command>
+      <Command>xcopy /Y /E /D "$(ProjectDir)dependencies\bin\$(PlatformTarget)\*" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -196,12 +216,15 @@
     <ClCompile Include="fxaudiodeviceselectdialog.cpp" />
     <ClCompile Include="fxconfigurationdialog.cpp" />
     <ClCompile Include="fxhelpers.cpp" />
+    <ClCompile Include="fxmark.cpp" />
     <ClCompile Include="fxplayer.cpp" />
     <ClCompile Include="fxplayercontrolwidget.cpp" />
     <ClCompile Include="fxplaylistmodel.cpp" />
     <ClCompile Include="fxtableview.cpp" />
     <ClCompile Include="fxtrack.cpp" />
+    <ClCompile Include="fxtrackanalyzer.cpp" />
     <ClCompile Include="fxtrackprogressbarwidget.cpp" />
+    <ClCompile Include="fxverticalaudiometerwidget.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +248,10 @@
     <QtMoc Include="fxplayercontrolwidget.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fxmark.h" />
+    <ClInclude Include="resource.h" />
+    <QtMoc Include="fxverticalaudiometerwidget.h" />
+    <QtMoc Include="fxtrackanalyzer.h" />
     <QtMoc Include="fxtrackprogressbarwidget.h" />
     <QtMoc Include="fxtableview.h" />
     <QtMoc Include="fxtrack.h" />
@@ -232,6 +259,9 @@
     <QtMoc Include="fxaudiodeviceselectdialog.h" />
     <QtMoc Include="fxconfigurationdialog.h" />
     <ClInclude Include="fxhelpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="fluxplayer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

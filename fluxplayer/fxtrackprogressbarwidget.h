@@ -34,17 +34,33 @@ protected:
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseDoubleClickEvent(QMouseEvent *event) override;
+	void wheelEvent(QWheelEvent *event) override;
 
 private:
 	const unsigned short int m_borderSize = 1;
 	const unsigned short int m_borderRadius = 5;
-	unsigned short int m_textXPad = 5;
+	const unsigned short int m_textXPad = 5;
+	const double m_wheelStep = 120.0;
+	const unsigned short int m_wheelPad = 2; // sec
 
 	QSize m_size;
 	QSize m_barSize;
 
-	QColor m_backgroundColor = Qt::black;
-	QColor m_borderColor = Qt::blue;
+	// Base color
+	const QColor m_backgroundColor = Qt::black;
+	const QColor m_borderColor = Qt::blue;
+
+	// Bar color
+	const QColor m_progressPlayingColor[2] = { QColor(80, 120, 20), QColor(50, 70, 30) };
+	const QColor m_progressFirstWarnColor[2] = { QColor(150, 20, 20), QColor(70, 10, 20) };
+	const QColor m_progressSecondWarnColor[2] = { QColor(200, 0, 10), QColor(120, 10, 20) };
+
+	// Text color
+	const QColor m_progressTitleColor = Qt::white;
+	const QColor m_progressTimeColor = Qt::white;
+	const QColor m_progressTimePlayingColor = QColor(150, 230, 80);
+	const QColor m_progressTimeSeekingColor = Qt::yellow;
 
 	QString m_progressTitle;
 	double m_audioDuration = -1;
@@ -54,10 +70,9 @@ private:
 	
 	bool m_playing = false;
 	bool m_showDurationAsCountdown = true;
-	bool m_mousePressing = false;
-
-	QPainterPath m_clipPath;
+	int m_mousePressedX = -1;
 
 signals:
-	void seekTo(double);
+	void seekToTime(double);
+	void seekRelativeTime(double);
 };

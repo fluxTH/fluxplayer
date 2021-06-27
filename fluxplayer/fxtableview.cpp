@@ -16,6 +16,7 @@ FXTableView::FXTableView(QWidget *parent)
 	this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	this->setAlternatingRowColors(true);
 	//this->setFocusPolicy(Qt::NoFocus);
+	//this->setStyleSheet("QTableView { outline: 0; }");
 
 	/*QPalette palette = this->palette();
 	palette.setBrush(QPalette::Highlight, QBrush(QColor(200, 255, 255)));
@@ -24,7 +25,7 @@ FXTableView::FXTableView(QWidget *parent)
 
 	this->setDragEnabled(true);
 	this->setDropIndicatorShown(true);
-	this->setDragDropMode(QAbstractItemView::InternalMove);
+	this->setDragDropMode(QAbstractItemView::DragDrop);
 	this->setDragDropOverwriteMode(false);
 	this->setAcceptDrops(true);
 

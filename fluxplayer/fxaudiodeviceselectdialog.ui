@@ -6,15 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>188</height>
+    <width>500</width>
+    <height>250</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>fluxplayer audio configuration</string>
@@ -63,7 +69,7 @@
           <item>
            <widget class="QRadioButton" name="radioButton_driverASIO">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>ASIO</string>
@@ -82,6 +88,20 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="80,20">
+          <item>
+           <widget class="QComboBox" name="comboBox_device"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_refreshDevice">
+            <property name="text">
+             <string>&amp;Refresh</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
@@ -90,14 +110,20 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="40,5,20,20">
           <item>
-           <widget class="QComboBox" name="comboBox_sampleRate"/>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBox_exclusiveMode">
-            <property name="text">
-             <string>Exclusive Mode</string>
+           <widget class="QComboBox" name="comboBox_sampleRate">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>170</width>
+              <height>0</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -108,7 +134,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>10</width>
               <height>20</height>
              </size>
             </property>
@@ -139,31 +165,29 @@
           </item>
          </layout>
         </item>
-        <item row="1" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="80,20">
-          <item>
-           <widget class="QComboBox" name="comboBox_device"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btn_refreshDevice">
-            <property name="text">
-             <string>&amp;Refresh</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="3" column="0">
+        <item row="6" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
            <string>SRC Quality:</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item row="6" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="27,15,5,20">
           <item>
            <widget class="QComboBox" name="comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>170</width>
+              <height>0</height>
+             </size>
+            </property>
             <item>
              <property name="text">
               <string>Very High</string>
@@ -172,13 +196,142 @@
            </widget>
           </item>
           <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Maximum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>&lt;b&gt;64pt sinc / 80ms latency&lt;/b&gt;</string>
+             <string>Mix Buffer:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox">
+            <property name="suffix">
+             <string> ms</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>20</number>
             </property>
            </widget>
           </item>
          </layout>
+        </item>
+        <item row="3" column="1">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QWidget" name="options_WASAPI" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="checkBox_exclusiveMode">
+               <property name="text">
+                <string>Exclusive Mode</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="options_ASIO" native="true">
+            <layout class="QHBoxLayout" name="ASIOGroup1" stretch="20,20,5,10,20">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="pushButton">
+               <property name="text">
+                <string>Control Panel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_2">
+               <property name="text">
+                <string>Refresh Driver</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Buffer Size:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_2"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_driverOptions">
+          <property name="text">
+           <string>Driver:</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -204,8 +357,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>210</x>
-     <y>133</y>
+     <x>219</x>
+     <y>178</y>
     </hint>
     <hint type="destinationlabel">
      <x>210</x>
@@ -220,8 +373,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>210</x>
-     <y>133</y>
+     <x>219</x>
+     <y>178</y>
     </hint>
     <hint type="destinationlabel">
      <x>210</x>

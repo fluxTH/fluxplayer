@@ -12,16 +12,17 @@
 #include "bassopus.h"
 #include "basswma.h"
 
-
 // TODO: Attach to native bass events, including unloading to m_isLoaded
 
-FXPlayer::FXPlayer(QObject *parent, const char &name)
+FXPlayer::FXPlayer(QObject* parent, const char& name)
 	: QObject(parent),
 	m_playerName(name),
 	m_streamHandle(NULL),
 	m_mixerHandle(nullptr),
+	m_playNextSyncHandle(0),
 	m_track(nullptr),
-	m_isLoaded(false)
+	m_isLoaded(false),
+	m_hasPlayed(false)
 {
 	qDebug() << "Player" << name << "created!";
 
@@ -34,12 +35,12 @@ FXPlayer::~FXPlayer()
 	this->eject();
 }
 
-void FXPlayer::attachToMixer(HSTREAM *mixerHandle)
+void FXPlayer::attachToMixer(HSTREAM* mixerHandle)
 {
 	this->m_mixerHandle = mixerHandle;
 }
 
-bool FXPlayer::loadFile(const QString &filepath)
+bool FXPlayer::loadFile(const QString& filepath)
 {
 	this->m_filePath = QFileInfo(filepath);
 
@@ -51,8 +52,9 @@ bool FXPlayer::loadFile(const QString &filepath)
 	if (this->isHandleValid(true)) {
 		qDebug() << "Stream OK";
 
-		BASS_ChannelSetAttribute(this->m_streamHandle, BASS_ATTRIB_VOL, 0.5);
-		BASS_ChannelSetAttribute(this->m_streamHandle, BASS_ATTRIB_SRC, 4);
+		// TEMP
+		this->setGain(-6);
+		//BASS_ChannelSetAttribute(this->m_streamHandle, BASS_ATTRIB_SRC, 4);
 
 		if (this->isUsingMixer()) {
 			DWORD mixFlags = BASS_MIXER_NORAMPIN | BASS_MIXER_CHAN_DOWNMIX | BASS_SAMPLE_FLOAT | BASS_MIXER_CHAN_PAUSE;
@@ -75,7 +77,7 @@ bool FXPlayer::loadFile(const QString &filepath)
 	return false;
 }
 
-bool FXPlayer::loadTrack(FXTrack *track)
+bool FXPlayer::loadTrack(FXTrack* track)
 {
 	if (!this->loadFile(track->getFileInfo()->filePath()))
 		return false;
@@ -84,6 +86,8 @@ bool FXPlayer::loadTrack(FXTrack *track)
 	track->setPlayer(this);
 
 	track->setMetadata("Duration", this->getTimeDuration());
+
+	this->reload();
 
 	return true;
 }
@@ -94,11 +98,12 @@ void FXPlayer::eject()
 		this->stop();
 
 		this->detachSyncEvents();
-		BASS_StreamFree(this->m_streamHandle);	
+		BASS_StreamFree(this->m_streamHandle);
 	}
 
 	this->m_streamHandle = NULL;
 	this->m_isLoaded = false;
+	this->m_hasPlayed = false;
 
 	if (this->m_track != nullptr)
 		this->m_track->removePlayer();
@@ -124,6 +129,9 @@ bool FXPlayer::play()
 
 		emit trackPlayed(this);
 	}
+
+	if (result && !this->m_hasPlayed)
+		this->m_hasPlayed = true;
 
 	return result;
 }
@@ -162,7 +170,12 @@ bool FXPlayer::stop()
 	return false;
 }
 
-bool FXPlayer::seek(const double &ratio)
+bool FXPlayer::seekTime(const double& sec)
+{
+	return this->seek(sec / this->getTimeDuration());
+}
+
+bool FXPlayer::seek(const double& ratio)
 {
 	QWORD pos = ratio * BASS_ChannelGetLength(this->m_streamHandle, BASS_POS_BYTE);
 	return this->seek(pos);
@@ -177,15 +190,34 @@ bool FXPlayer::seek(QWORD byte_pos)
 	return false;
 }
 
-bool FXPlayer::isFree()
+void FXPlayer::reload()
 {
-	if (!this->isHandleValid())
-		return true;
+	if (this->isHandleValid()) {
+		this->attachPlayNextSync();
 
-	return false;
+		if (!this->isPlaying() && !this->m_hasPlayed) {
+			double trimIn = this->m_track->getCuePoint("TrimIn");
+			if (trimIn != -1.0) {
+				this->seekTime(trimIn);
+				qDebug() << "seek to trim in" << trimIn;
+			}
+		}
+
+		this->setGain(this->m_track->getNormalizationGain());
+	}
 }
 
-bool FXPlayer::isHandleValid(const bool &overrideLocal)
+bool FXPlayer::isFree()
+{
+	return !this->isHandleValid();
+}
+
+bool FXPlayer::isLoaded()
+{
+	return this->isHandleValid();
+}
+
+bool FXPlayer::isHandleValid(const bool& overrideLocal)
 {
 	if (this->m_isLoaded || overrideLocal)
 		if (this->m_streamHandle != 0)
@@ -204,7 +236,7 @@ bool FXPlayer::isPlaying()
 	if (this->isHandleValid()) {
 		if (this->isUsingMixer()) {
 			bool playing = !(BASS_Mixer_ChannelFlags(this->m_streamHandle, 0, 0) & BASS_MIXER_CHAN_PAUSE);
-			qDebug() << "playing:" << playing;
+			//qDebug() << "playing:" << playing;
 			return playing;
 		}
 		else {
@@ -243,58 +275,58 @@ QString FXPlayer::getAudioType()
 {
 	BASS_CHANNELINFO info = this->getAudioStreamInfo();
 	switch (info.ctype) {
-		case BASS_CTYPE_STREAM_VORBIS:
-			return "Vorbis";
-		case BASS_CTYPE_STREAM_MP1:
-			return "MP1";
-		case BASS_CTYPE_STREAM_MP2:
-			return "MP2";
-		case BASS_CTYPE_STREAM_MP3:
-		case BASS_CTYPE_STREAM_WMA_MP3:
-			return "MP3";
-		case BASS_CTYPE_STREAM_AIFF:
-			return "AIFF";
-		case BASS_CTYPE_STREAM_AM:
-			return "AndroidMedia";
-		case BASS_CTYPE_STREAM_CA:
-			return "CoreAudio";
-		case BASS_CTYPE_STREAM_MF:
-			return "MediaFoundation";
-		case BASS_CTYPE_STREAM_WAV_PCM:
-			return "PCM";
-		case BASS_CTYPE_STREAM_WAV_FLOAT:
-			return "PCM/F";
-		case BASS_CTYPE_STREAM_FLAC:
-		case BASS_CTYPE_STREAM_FLAC_OGG:
-			return "FLAC";
-		case BASS_CTYPE_STREAM_AAC:
-		case BASS_CTYPE_STREAM_MP4:
-			return "AAC";
-		case BASS_CTYPE_STREAM_APE:
-			return "APE";
-		case BASS_CTYPE_STREAM_ALAC:
-			return "ALAC";
-		case BASS_CTYPE_STREAM_OPUS:
-			return "OPUS";
-		case BASS_CTYPE_STREAM_WMA:
-			return "WMA";
-		default:
-			return "Unknown";
+	case BASS_CTYPE_STREAM_VORBIS:
+		return "Vorbis";
+	case BASS_CTYPE_STREAM_MP1:
+		return "MP1";
+	case BASS_CTYPE_STREAM_MP2:
+		return "MP2";
+	case BASS_CTYPE_STREAM_MP3:
+	case BASS_CTYPE_STREAM_WMA_MP3:
+		return "MP3";
+	case BASS_CTYPE_STREAM_AIFF:
+		return "AIFF";
+	case BASS_CTYPE_STREAM_AM:
+		return "AndroidMedia";
+	case BASS_CTYPE_STREAM_CA:
+		return "CoreAudio";
+	case BASS_CTYPE_STREAM_MF:
+		return "MediaFoundation";
+	case BASS_CTYPE_STREAM_WAV_PCM:
+		return "PCM";
+	case BASS_CTYPE_STREAM_WAV_FLOAT:
+		return "PCM/F";
+	case BASS_CTYPE_STREAM_FLAC:
+	case BASS_CTYPE_STREAM_FLAC_OGG:
+		return "FLAC";
+	case BASS_CTYPE_STREAM_AAC:
+	case BASS_CTYPE_STREAM_MP4:
+		return "AAC";
+	case BASS_CTYPE_STREAM_APE:
+		return "APE";
+	case BASS_CTYPE_STREAM_ALAC:
+		return "ALAC";
+	case BASS_CTYPE_STREAM_OPUS:
+		return "OPUS";
+	case BASS_CTYPE_STREAM_WMA:
+		return "WMA";
+	default:
+		return "Unknown";
 	}
 }
 
 QString FXPlayer::getAudioDriver()
 {
-	FXAudioDriver *driver = dynamic_cast<FluxPlayer*>(this->parent())->getAudioDriver();
+	FXAudioDriver* driver = dynamic_cast<FluxPlayer*>(this->parent())->getAudioDriver();
 	switch (*driver) {
-		case FXAudioDriver::WASAPI:
-			return "WASAPI";
-		case FXAudioDriver::DSOUND:
-			return "DSOUND";
-		case FXAudioDriver::ASIO:
-			return "ASIO";
-		default:
-			return "";
+	case FXAudioDriver::WASAPI:
+		return "WASAPI";
+	case FXAudioDriver::DSOUND:
+		return "DSOUND";
+	case FXAudioDriver::ASIO:
+		return "ASIO";
+	default:
+		return "";
 	}
 }
 
@@ -331,9 +363,27 @@ double FXPlayer::getTimeDuration()
 	return -1;
 }
 
-void FXPlayer::setName(const char &name)
+double FXPlayer::getDisplayTimeDuration()
+{
+	if (this->isHandleValid()) {
+		double nextCue = this->m_track->getCuePoint("PlayNext");
+		return nextCue == -1.0 ? this->getTimeDuration() : nextCue;
+	}
+	return this->getTimeDuration();
+}
+
+void FXPlayer::setName(const char& name)
 {
 	this->m_playerName = name;
+}
+
+void FXPlayer::setGain(const double& gain)
+{
+	if (this->isHandleValid()) {
+		qDebug() << "Gain set to" << gain << "dB";
+		float gain_float = (gain == 0) ? 1.0 : pow(10, gain / 20);
+		BASS_ChannelSetAttribute(this->m_streamHandle, BASS_ATTRIB_VOL, gain_float);
+	}
 }
 
 char* FXPlayer::getName()
@@ -341,22 +391,22 @@ char* FXPlayer::getName()
 	return &this->m_playerName;
 }
 
-void CALLBACK PlayerSyncFreeCallback(HSYNC, DWORD, DWORD, void *user)
+void CALLBACK PlayerSyncFreeCallback(HSYNC, DWORD, DWORD, void* user)
 {
-	FXPlayer *player = reinterpret_cast<FXPlayer*>(user);
+	FXPlayer* player = reinterpret_cast<FXPlayer*>(user);
 	//emit player->bassSyncFree(); // Disable for now, sometimes get freed after player is destroyed
 	qDebug() << "BASS ch free, player" << *player->getName();
 }
 
-void CALLBACK PlayerSyncEndCallback(HSYNC, DWORD, DWORD, void *user)
+void CALLBACK PlayerSyncEndCallback(HSYNC, DWORD, DWORD, void* user)
 {
-	FXPlayer *player = reinterpret_cast<FXPlayer*>(user);
+	FXPlayer* player = reinterpret_cast<FXPlayer*>(user);
 	emit player->bassSyncEnd();
 }
 
-void CALLBACK PlayerSyncPosCallback(HSYNC, DWORD, DWORD, void *user)
+void CALLBACK PlayerSyncPosCallback(HSYNC, DWORD, DWORD, void* user)
 {
-	FXPlayer *player = reinterpret_cast<FXPlayer*>(user);
+	FXPlayer* player = reinterpret_cast<FXPlayer*>(user);
 	emit player->bassSyncPosNext();
 }
 
@@ -373,10 +423,8 @@ bool FXPlayer::attachSyncEvents()
 		this->attachSyncEvent(BASS_ChannelSetSync(this->m_streamHandle, BASS_SYNC_FREE, NULL, &PlayerSyncFreeCallback, this));
 
 		// One time events
-		QWORD pos = BASS_ChannelSeconds2Bytes(this->m_streamHandle, this->getTimeDuration() - 7);
-		BASS_ChannelSetSync(this->m_streamHandle, BASS_SYNC_POS | BASS_SYNC_ONETIME, pos, &PlayerSyncPosCallback, this);
 		BASS_ChannelSetSync(this->m_streamHandle, BASS_SYNC_END | BASS_SYNC_ONETIME, NULL, &PlayerSyncEndCallback, this);
-		
+
 		return true;
 	}
 
@@ -385,8 +433,24 @@ bool FXPlayer::attachSyncEvents()
 
 void FXPlayer::detachSyncEvents()
 {
-	foreach (HSYNC syncHandle, this->m_syncHandles)
+	foreach(HSYNC syncHandle, this->m_syncHandles)
 		BASS_ChannelRemoveSync(this->m_streamHandle, syncHandle);
+}
+
+void FXPlayer::attachPlayNextSync()
+{
+	double playNextPos = this->m_track->getCuePoint("PlayNext");
+
+	if (playNextPos != -1.0) {
+		if (this->m_playNextSyncHandle != 0) {
+			BASS_ChannelRemoveSync(this->m_streamHandle, this->m_playNextSyncHandle);
+		}
+
+		QWORD pos = BASS_ChannelSeconds2Bytes(this->m_streamHandle, playNextPos);
+		this->m_playNextSyncHandle = BASS_ChannelSetSync(this->m_streamHandle, BASS_SYNC_POS | BASS_SYNC_ONETIME, pos, &PlayerSyncPosCallback, this);
+
+		qDebug() << "PLAY NEXT SYNC ATTACH PLAYER" << *this->getName();
+	}
 }
 
 // Slots

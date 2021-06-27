@@ -12,11 +12,12 @@ FXAudioDeviceSelectDialog::FXAudioDeviceSelectDialog(QWidget *parent)
 
 	QObject::connect(ui.driverButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(handleDriverChange(int)));
 	QObject::connect(ui.btn_refreshDevice, SIGNAL(clicked()), this, SLOT(handleRefreshDevice()));
+	QObject::connect(ui.comboBox_device, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleDeviceChange(QString)));
 
 	if (parent == nullptr)
 		this->setWindowFlag(Qt::WindowStaysOnTopHint);
 	
-	this->populateSampleRateCombobox();
+	this->populateSampleRateComboBox();
 	this->handleDriverChange(0);
 	
 }
@@ -46,6 +47,11 @@ short int FXAudioDeviceSelectDialog::getChannelLayout()
 	return -1;
 }
 
+bool FXAudioDeviceSelectDialog::getWASAPIExclusiveMode()
+{
+	return ui.checkBox_exclusiveMode->isChecked();
+}
+
 FXAudioDriver FXAudioDeviceSelectDialog::getDriver()
 {
 	if (ui.radioButton_driverWASAPI->isChecked())
@@ -60,28 +66,33 @@ FXAudioDriver FXAudioDeviceSelectDialog::getDriver()
 	return FXAudioDriver::Invalid;
 }
 
-void FXAudioDeviceSelectDialog::populateSampleRateCombobox()
+void FXAudioDeviceSelectDialog::populateSampleRateComboBox()
 {
 	int sampleRates[7] = { 22050, 32000, 44100, 48000, 96000, 176400, 192000 };
 	for (short int i = 0; i < (sizeof(sampleRates) / sizeof(*sampleRates)); i++)
 		ui.comboBox_sampleRate->insertItem(i, QString("%1 Hz").arg(sampleRates[i]), sampleRates[i]);
+	ui.comboBox_sampleRate->setEnabled(true);
 	ui.comboBox_sampleRate->setCurrentIndex(3);
 }
 
-void FXAudioDeviceSelectDialog::populateDeviceCombobox(const FXAudioDriver &driver)
+void FXAudioDeviceSelectDialog::populateDeviceComboBox(const FXAudioDriver &driver)
 {
 	switch (driver) {
 		case FXAudioDriver::WASAPI:
-			this->populateWASAPIDeviceCombobox();
+			this->populateWASAPIDeviceComboBox();
+			break;
+
+		case FXAudioDriver::ASIO:
+			this->populateASIODeviceComboBox();
 			break;
 
 		case FXAudioDriver::DSOUND:
-			this->populateDSOUNDDeviceCombobox();
+			this->populateDSOUNDDeviceComboBox();
 			break;
 	}
 }
 
-void FXAudioDeviceSelectDialog::populateWASAPIDeviceCombobox()
+void FXAudioDeviceSelectDialog::populateWASAPIDeviceComboBox()
 {
 	this->setCursor(QCursor(Qt::WaitCursor));
 
@@ -106,7 +117,29 @@ void FXAudioDeviceSelectDialog::populateWASAPIDeviceCombobox()
 	this->setCursor(QCursor());
 }
 
-void FXAudioDeviceSelectDialog::populateDSOUNDDeviceCombobox()
+void FXAudioDeviceSelectDialog::populateASIODeviceComboBox()
+{
+	this->setCursor(QCursor(Qt::WaitCursor));
+
+	ui.comboBox_device->clear();
+
+	BASS_ASIO_DEVICEINFO info;
+	int a = 0;
+	for (; BASS_ASIO_GetDeviceInfo(a, &info); a++) {
+		ui.comboBox_device->addItem(QString(info.name), a);
+	}
+
+	/*if (a == 1 && BASS_ErrorGetCode() == BASS_ERROR_WASAPI) {
+		// WASAPI not availiable
+		ui.radioButton_driverWASAPI->setEnabled(false);
+		ui.radioButton_driverDSOUND->setChecked(true);
+		this->handleDriverChange(0);
+	}*/
+
+	this->setCursor(QCursor());
+}
+
+void FXAudioDeviceSelectDialog::populateDSOUNDDeviceComboBox()
 {
 	this->setCursor(QCursor(Qt::WaitCursor));
 
@@ -129,16 +162,61 @@ void FXAudioDeviceSelectDialog::populateDSOUNDDeviceCombobox()
 void FXAudioDeviceSelectDialog::handleDriverChange(int) {
 	FXAudioDriver currentDriver = this->getDriver();
 	if (currentDriver == FXAudioDriver::WASAPI) {
-		ui.checkBox_exclusiveMode->setEnabled(true);
-		this->populateWASAPIDeviceCombobox();
-	} else {
-		ui.checkBox_exclusiveMode->setEnabled(false);
-		ui.checkBox_exclusiveMode->setCheckState(Qt::Unchecked);
-		this->populateDSOUNDDeviceCombobox();
+		this->populateWASAPIDeviceComboBox();
+
+		ui.label_driverOptions->setHidden(false);
+		ui.label_driverOptions->setText("WASAPI:");
+
+		ui.options_WASAPI->setHidden(false);
+		ui.options_ASIO->setHidden(true);
+	}
+	else if (currentDriver == FXAudioDriver::ASIO) {
+		this->populateASIODeviceComboBox();
+
+		ui.label_driverOptions->setHidden(false);
+		ui.label_driverOptions->setText("ASIO:");
+
+		ui.options_WASAPI->setHidden(true);
+		ui.options_ASIO->setHidden(false);
+	}
+	else {
+		this->populateDSOUNDDeviceComboBox();
+
+		ui.label_driverOptions->setHidden(true);
+		ui.options_WASAPI->setHidden(true);
+		ui.options_ASIO->setHidden(true);
+	}
+}
+
+void FXAudioDeviceSelectDialog::handleDeviceChange(QString deviceName)
+{
+	FXAudioDriver currentDriver = this->getDriver();
+	if (currentDriver == FXAudioDriver::WASAPI && !this->getWASAPIExclusiveMode() && this->getOutputDeviceIndex() != -1) {
+		this->setCursor(QCursor(Qt::WaitCursor));
+
+		ui.comboBox_sampleRate->clear();
+
+		BASS_WASAPI_DEVICEINFO info;
+		short int a = 1;
+		for (; BASS_WASAPI_GetDeviceInfo(a, &info); a++) {
+			if (!(info.flags & BASS_DEVICE_INPUT) && (info.flags & BASS_DEVICE_ENABLED)) {
+				if (info.name == deviceName) {
+					ui.comboBox_sampleRate->addItem(QString("%1 Hz").arg(info.mixfreq), static_cast<int>(info.mixfreq));
+					break;
+				}
+			}
+		}
+
+		this->setCursor(QCursor());
+		ui.comboBox_sampleRate->setEnabled(false);
+	}
+	else {
+		ui.comboBox_sampleRate->clear();
+		this->populateSampleRateComboBox();
 	}
 }
 
 void FXAudioDeviceSelectDialog::handleRefreshDevice()
 {
-	this->populateDeviceCombobox(this->getDriver());
+	this->populateDeviceComboBox(this->getDriver());
 }

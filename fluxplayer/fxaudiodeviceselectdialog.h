@@ -7,6 +7,7 @@
 
 #include "bass.h"
 #include "basswasapi.h"
+#include "bassasio.h"
 
 class FXAudioDeviceSelectDialog : public QDialog
 {
@@ -19,17 +20,20 @@ public:
 	int getSampleRate();
 	int getOutputDeviceIndex();
 	short int getChannelLayout();
+	bool getWASAPIExclusiveMode();
 	FXAudioDriver getDriver();
 
 private:
 	Ui::FXAudioDeviceSelectDialog ui;
 
-	void populateSampleRateCombobox();
-	void populateDeviceCombobox(const FXAudioDriver &driver);
-	void populateWASAPIDeviceCombobox();
-	void populateDSOUNDDeviceCombobox();
+	void populateSampleRateComboBox();
+	void populateDeviceComboBox(const FXAudioDriver &driver);
+	void populateWASAPIDeviceComboBox();
+	void populateASIODeviceComboBox();
+	void populateDSOUNDDeviceComboBox();
 
 private slots:
 	void handleDriverChange(int);
+	void handleDeviceChange(QString);
 	void handleRefreshDevice();
 };

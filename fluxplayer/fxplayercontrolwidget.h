@@ -18,8 +18,6 @@ public:
 	void detachPlayer();
 
 private:
-	const QString TIMELABEL_MASK;
-
 	Ui::FXPlayerControlWidget ui;
 	QTimer *m_timer;
 
@@ -31,6 +29,7 @@ private:
 	bool m_posIsCountdown;
 
 	void initializeComponents();
+	void resetDisplay();
 
 signals:
 	void playNext();
@@ -45,5 +44,6 @@ public slots:
 	void handlePlayerPlayed(FXPlayer*);
 	void handlePlayerStopped(FXPlayer*);
 
-	void handleSeekTo(double);
+	void handleSeekToTime(double);
+	void handleSeekRelativeTime(double);
 };

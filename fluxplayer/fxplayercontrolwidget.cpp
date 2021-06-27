@@ -10,8 +10,7 @@ FXPlayerControlWidget::FXPlayerControlWidget(QWidget *parent)
 	: QWidget(parent),
 	m_isPlayerAttached(false),
 	m_posIsCountdown(true),
-	m_currentPlayer(nullptr),
-	TIMELABEL_MASK("<a href='#' style='color:black;text-decoration:none;font-weight:bold;'>%1</a>")
+	m_currentPlayer(nullptr)
 {
 	ui.setupUi(this);
 	this->initializeComponents();
@@ -24,13 +23,12 @@ void FXPlayerControlWidget::initializeComponents()
 	QObject::connect(this->m_timer, SIGNAL(timeout()), this, SLOT(tick()));
 	this->m_timer->start(100);
 
-	QObject::connect(ui.audioProgressBar, SIGNAL(seekTo(double)), this, SLOT(handleSeekTo(double)));
+	QObject::connect(ui.audioProgressBar, SIGNAL(seekToTime(double)), this, SLOT(handleSeekToTime(double)));
+	QObject::connect(ui.audioProgressBar, SIGNAL(seekRelativeTime(double)), this, SLOT(handleSeekRelativeTime(double)));
 
 	QObject::connect(ui.btn_playPause, SIGNAL(clicked()), this, SLOT(togglePlay()));
 	QObject::connect(ui.btn_fwd, SIGNAL(clicked()), this, SIGNAL(playNext()));
 	QObject::connect(ui.btn_prev, SIGNAL(clicked()), this, SIGNAL(playPrev()));
-
-	ui.label_audioCover->setText("<div style=\"color:#aaaaaa;text-align:center;\">(no cover)</div>");
 
 	QStringList icons = {"play", "pause"};
 	foreach(QString iconName, icons) {
@@ -54,6 +52,28 @@ void FXPlayerControlWidget::initializeComponents()
 
 	ui.btn_append->setIcon(QIcon(":/FluxPlayer/Resources/icons/arrows.svg"));
 	ui.btn_append->setIconSize(toolBtnSize);
+
+	this->resetDisplay();
+}
+
+void FXPlayerControlWidget::resetDisplay() {
+	ui.btn_playPause->setIcon(this->m_icons["play"]);
+
+	ui.label_audioCover->setText("<div style=\"color:#aaaaaa;text-align:center;\">(no cover)</div>");
+
+	// TODO: reset player texts
+	ui.label_InfoValue1->setText("");
+	ui.label_InfoValue2->setText("");
+
+	ui.label_audioCover->setText("");
+
+	ui.label_playerName->setText("");
+	ui.label_audioDriver->setText("");
+	ui.label_audioInfo->setText("No tracks loaded");
+
+	ui.audioProgressBar->setProgressTitle("");
+	ui.audioProgressBar->setAudioDuration(-1);
+
 }
 
 FXPlayerControlWidget::~FXPlayerControlWidget()
@@ -63,12 +83,18 @@ FXPlayerControlWidget::~FXPlayerControlWidget()
 
 void FXPlayerControlWidget::attachPlayer(FXPlayer *player, const bool &forced)
 {
-	if (forced || !this->m_isPlayerAttached) {
+	if (player == nullptr) {
+		this->detachPlayer();
+		this->resetDisplay();
+	}
+	else if (forced || !this->m_isPlayerAttached) {
+		if (this->m_isPlayerAttached)
+			this->detachPlayer();
 
 		this->m_currentPlayer = player;
 		this->m_isPlayerAttached = true;
 
-		ui.audioProgressBar->setAudioDuration(player->getTimeDuration() - 7);
+		ui.audioProgressBar->setAudioDuration(player->getDisplayTimeDuration());
 
 		ui.label_playerName->setText(
 			QString("<div style='font-size:20pt;text-align:center;'>%1</div>")
@@ -95,12 +121,30 @@ void FXPlayerControlWidget::attachPlayer(FXPlayer *player, const bool &forced)
 			.arg(QString::number(info.freq))
 		);
 
-		ui.label_audioDriver->setText(QString("<div style='color:#aaaaaa;text-align:right'>%1</div>").arg(player->getAudioDriver()));
+		ui.label_audioDriver->setText(QString("<div style='color:#999999;text-align:right'>%1</div>").arg(player->getAudioDriver().leftJustified(5)));
+
+		track->mutex.lock();
+
+		track->readCoverPicture();
+		QPixmap *coverPix = track->getCoverPixmap();
+		if (coverPix != nullptr) {
+			ui.label_audioCover->setPixmap(*coverPix);
+			ui.label_audioCover->setScaledContents(true);
+		}
+		else {
+			ui.label_audioCover->setText("<div style='color:#aaaaaa;text-align:center'>(no cover)</div>");
+		}
+
+		track->mutex.unlock();
 	}
 }
 
 void FXPlayerControlWidget::detachPlayer()
 {
+	/*if (this->m_currentPlayer && this->m_currentPlayer->isLoaded()) {
+		this->m_currentPlayer->getTrack()->deleteCoverPixmap();
+	}*/
+
 	this->m_currentPlayer = nullptr;
 
 	this->m_isPlayerAttached = false;
@@ -144,7 +188,6 @@ void FXPlayerControlWidget::togglePlay()
 void FXPlayerControlWidget::handlePlayerPlayed(FXPlayer *player)
 {
 	if (this->m_currentPlayer == player) {
-		qDebug() << "player played!!!";
 		ui.btn_playPause->setIcon(this->m_icons["pause"]);
 		ui.audioProgressBar->setPlaying(true);
 	}
@@ -153,15 +196,21 @@ void FXPlayerControlWidget::handlePlayerPlayed(FXPlayer *player)
 void FXPlayerControlWidget::handlePlayerStopped(FXPlayer *player)
 {
 	if (this->m_currentPlayer == player) {
-		qDebug() << "player stopped!!!";
 		ui.btn_playPause->setIcon(this->m_icons["play"]);
 		ui.audioProgressBar->setPlaying(false);
 	}
 }
 
-void FXPlayerControlWidget::handleSeekTo(double sec)
+void FXPlayerControlWidget::handleSeekToTime(double sec)
 {
 	if (this->m_isPlayerAttached) {
-		this->m_currentPlayer->seek(sec / this->m_currentPlayer->getTimeDuration());
+		this->m_currentPlayer->seekTime(sec);
+	}
+}
+
+void FXPlayerControlWidget::handleSeekRelativeTime(double pad)
+{
+	if (this->m_isPlayerAttached) {
+		this->m_currentPlayer->seekTime(pad + this->m_currentPlayer->getTimePosition());
 	}
 }

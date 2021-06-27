@@ -8,38 +8,42 @@
 #include "fxplaylistmodel.h"
 #include "fxhelpers.h"
 
+#include "ebur128.h"
 
 class FluxPlayer : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	FluxPlayer(QWidget *parent = Q_NULLPTR);
+	FluxPlayer(QWidget* parent = Q_NULLPTR);
 	~FluxPlayer();
 
 	bool initialize();
 	FXAudioDriver* getAudioDriver();
 
+	ebur128_state* m_r128State;
+	int m_audioGranule;
+
 private:
-	const QStringList BASS_PLUGINS = { 
-		"bassflac", "bassopus", "bass_aac", "bass_ape", "bassalac", "basswebm", "basswma" 
+	const QStringList BASS_PLUGINS = {
+		"bassflac", "bassopus", "bass_aac", "bass_ape", "bassalac", "basswebm", "basswma"
 	};
 
-	const QStringList AUDIO_EXTS = {
-		"aac", "aif", "aiff", "alac", "ape", "au", "flac", "m4a", "m4b", "mp1", "mp2", "mp3",
-		"mp4", "ogg", "oga", "mogg", "opus", "ts", "wav", "wma", "wv", "webm", "cda"
-	};
 	const char* PLAYER_NAME_MAP = "ABCDEF";
 	const short int PLAYER_COUNT = 3;
+	const unsigned short int METER_UPDATE_PERIOD_MS = 40;
 
 	Ui::FluxPlayerClass ui;
 
-	FXPlaylistModel* m_playlistModel;
+	FXPlaylistModel m_playlistModel;
 
 	QList<FXPlayer*>* m_players;
 	QVector<HPLUGIN> m_bassPlugins;
 
 	HSTREAM m_mixerHandle;
+
+	QTimer* m_levelTimer;
+	unsigned short int m_levelLap = 0;
 
 	FXAudioDriver m_audioDriver;
 	int m_audioSampleRate;
@@ -50,10 +54,10 @@ private:
 	void initPlayers();
 	void initPlaylist();
 
-	short int createPlayer(const char &name);
+	short int createPlayer(const char& name);
 
-	bool deletePlayer(short int &index);
-	bool deletePlayer(FXPlayer *player);
+	bool deletePlayer(short int& index);
+	bool deletePlayer(FXPlayer* player);
 
 public slots:
 	void handleAttachPlayerControl(FXPlayer*, bool);
@@ -64,4 +68,6 @@ public slots:
 
 	void handleActionConfiguration();
 
+	void handleLevelTick();
+	void handleVolumeRatioChanged(double);
 };

@@ -70,6 +70,15 @@
     <ClCompile Include="fxtrackprogressbarwidget.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
+    <ClCompile Include="fxtrackanalyzer.cpp">
+      <Filter>Source Files\models</Filter>
+    </ClCompile>
+    <ClCompile Include="fxverticalaudiometerwidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="fxmark.cpp">
+      <Filter>Source Files\models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="fluxplayer.h">
@@ -99,6 +108,12 @@
     <QtMoc Include="fxtrackprogressbarwidget.h">
       <Filter>Header Files\widgets</Filter>
     </QtMoc>
+    <QtMoc Include="fxtrackanalyzer.h">
+      <Filter>Header Files\models</Filter>
+    </QtMoc>
+    <QtMoc Include="fxverticalaudiometerwidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="fluxplayer.ui">
@@ -123,5 +138,16 @@
     <ClInclude Include="fxhelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fxmark.h">
+      <Filter>Header Files\models</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="fluxplayer.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
